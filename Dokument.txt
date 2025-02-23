@@ -1,0 +1,710 @@
+//@version=5
+indicator("PO3 Exotrades", overlay=true)
+
+// Inputs for Colors
+groupBody = "Body Settings"
+dn_col = input.color(color.new(color.red, 0), "Bearish Body Color", group=groupBody)
+up_col = input.color(color.new(color.green, 0), "Bullish Body Color", group=groupBody)
+border_col = input.color(color.new(color.black, 0), "Border Color", group=groupBody)
+
+groupWick = "Wick Settings"
+dn_wick = input.color(color.new(color.red, 0), "Bearish Wick Color", group=groupWick)
+up_wick = input.color(color.new(color.green, 0), "Bullish Wick Color", group=groupWick)
+
+// Inputs for Size and Position
+groupSize = "Size and Position"
+scale = input.int(1, "Scale", step=1, minval=0, maxval=5, group=groupSize)  // Adjust Candle Size (integer)
+offsetShift = input.int(5, "Position Offset", step=1, minval=1, maxval=100, group=groupSize)  // Move Candle Right/Left
+
+// Number of Candles to Display
+numCandles = input.int(3, "Number of Candles to Display", minval=1, maxval=10, group="Candle Count")
+
+// Timeframe Input
+tfGroup = "Timeframe Settings"
+tf = input.timeframe("60", "Timeframe", group=tfGroup)
+
+// HTF Candle Data for Current Candle
+[o, h, l, c] = request.security(syminfo.tickerid, tf, [open, high, low, close])
+
+// HTF Candle Data for Previous Candles
+o2 = request.security(syminfo.tickerid, tf, open[1])
+h2 = request.security(syminfo.tickerid, tf, high[1])
+l2 = request.security(syminfo.tickerid, tf, low[1])
+c2 = request.security(syminfo.tickerid, tf, close[1])
+
+o3 = request.security(syminfo.tickerid, tf, open[2])
+h3 = request.security(syminfo.tickerid, tf, high[2])
+l3 = request.security(syminfo.tickerid, tf, low[2])
+c3 = request.security(syminfo.tickerid, tf, close[2])
+
+o4 = request.security(syminfo.tickerid, tf, open[3])
+h4 = request.security(syminfo.tickerid, tf, high[3])
+l4 = request.security(syminfo.tickerid, tf, low[3])
+c4 = request.security(syminfo.tickerid, tf, close[3])
+
+o5 = request.security(syminfo.tickerid, tf, open[4])
+h5 = request.security(syminfo.tickerid, tf, high[4])
+l5 = request.security(syminfo.tickerid, tf, low[4])
+c5 = request.security(syminfo.tickerid, tf, close[4])
+
+o6 = request.security(syminfo.tickerid, tf, open[5])
+h6 = request.security(syminfo.tickerid, tf, high[5])
+l6 = request.security(syminfo.tickerid, tf, low[5])
+c6 = request.security(syminfo.tickerid, tf, close[5])
+
+o7 = request.security(syminfo.tickerid, tf, open[6])
+h7 = request.security(syminfo.tickerid, tf, high[6])
+l7 = request.security(syminfo.tickerid, tf, low[6])
+c7 = request.security(syminfo.tickerid, tf, close[6])
+
+o8 = request.security(syminfo.tickerid, tf, open[7])
+h8 = request.security(syminfo.tickerid, tf, high[7])
+l8 = request.security(syminfo.tickerid, tf, low[7])
+c8 = request.security(syminfo.tickerid, tf, close[7])
+
+o9 = request.security(syminfo.tickerid, tf, open[8])
+h9 = request.security(syminfo.tickerid, tf, high[8])
+l9 = request.security(syminfo.tickerid, tf, low[8])
+c9 = request.security(syminfo.tickerid, tf, close[8])
+
+o10 = request.security(syminfo.tickerid, tf, open[9])
+h10 = request.security(syminfo.tickerid, tf, high[9])
+l10 = request.security(syminfo.tickerid, tf, low[9])
+c10 = request.security(syminfo.tickerid, tf, close[9])
+
+// Convert position to integer
+offset = bar_index + offsetShift // Final integer position for box.new and line.new
+
+// Define spacing between the candles, dynamically adjusting with scale
+baseSpacing = 1  // Always keep a small base spacing between candles
+spacing = baseSpacing + scale * 2  // Increase spacing as scale increases
+
+// Height of the candles (height stays constant)
+height_current = h - l
+scaledHeight = height_current // Keep height constant
+
+// Apply Scale to the width of the candles, keeping the height constant
+scaledWidth = scale * 2 // Apply scale to width of the body (makes it grow or shrink)
+
+// Calculate the position for the body (keeping the center position of the body)
+scaledTop = math.max(o, c) // Top of the body (unscaled height)
+scaledBottom = math.min(o, c) // Bottom of the body (unscaled height)
+scaledHigh = h // Wick high point
+scaledLow = l // Wick low point
+
+scaledTop2 = math.max(o2, c2)
+scaledBottom2 = math.min(o2, c2)
+scaledHigh2 = h2
+scaledLow2 = l2
+
+scaledTop3 = math.max(o3, c3)
+scaledBottom3 = math.min(o3, c3)
+scaledHigh3 = h3
+scaledLow3 = l3
+
+scaledTop4 = math.max(o4, c4)
+scaledBottom4 = math.min(o4, c4)
+scaledHigh4 = h4
+scaledLow4 = l4
+
+scaledTop5 = math.max(o5, c5)
+scaledBottom5 = math.min(o5, c5)
+scaledHigh5 = h5
+scaledLow5 = l5
+
+scaledTop6 = math.max(o6, c6)
+scaledBottom6 = math.min(o6, c6)
+scaledHigh6 = h6
+scaledLow6 = l6
+
+scaledTop7 = math.max(o7, c7)
+scaledBottom7 = math.min(o7, c7)
+scaledHigh7 = h7
+scaledLow7 = l7
+
+scaledTop8 = math.max(o8, c8)
+scaledBottom8 = math.min(o8, c8)
+scaledHigh8 = h8
+scaledLow8 = l8
+
+scaledTop9 = math.max(o9, c9)
+scaledBottom9 = math.min(o9, c9)
+scaledHigh9 = h9
+scaledLow9 = l9
+
+scaledTop10 = math.max(o10, c10)
+scaledBottom10 = math.min(o10, c10)
+scaledHigh10 = h10
+scaledLow10 = l10
+
+// Determine Candle Colors (use chart's candle color settings automatically)
+candleColor = c > o ? up_col : dn_col
+wickColor = c > o ? up_wick : dn_wick
+
+candleColor2 = c2 > o2 ? up_col : dn_col
+wickColor2 = c2 > o2 ? up_wick : dn_wick
+
+candleColor3 = c3 > o3 ? up_col : dn_col
+wickColor3 = c3 > o3 ? up_wick : dn_wick
+
+candleColor4 = c4 > o4 ? up_col : dn_col
+wickColor4 = c4 > o4 ? up_wick : dn_wick
+
+candleColor5 = c5 > o5 ? up_col : dn_col
+wickColor5 = c5 > o5 ? up_wick : dn_wick
+
+candleColor6 = c6 > o6 ? up_col : dn_col
+wickColor6 = c6 > o6 ? up_wick : dn_wick
+
+candleColor7 = c7 > o7 ? up_col : dn_col
+wickColor7 = c7 > o7 ? up_wick : dn_wick
+
+candleColor8 = c8 > o8 ? up_col : dn_col
+wickColor8 = c8 > o8 ? up_wick : dn_wick
+
+candleColor9 = c9 > o9 ? up_col : dn_col
+wickColor9 = c9 > o9 ? up_wick : dn_wick
+
+candleColor10 = c10 > o10 ? up_col : dn_col
+wickColor10 = c10 > o10 ? up_wick : dn_wick
+
+// Delete Previous Drawings
+var box candleBody = na
+var line wickFull = na
+var line wickTop = na
+var line wickBottom = na
+
+var box candleBody2 = na
+var line wickFull2 = na
+var line wickTop2 = na
+var line wickBottom2 = na
+
+var box candleBody3 = na
+var line wickFull3 = na
+var line wickTop3 = na
+var line wickBottom3 = na
+
+var box candleBody4 = na
+var line wickFull4 = na
+var line wickTop4 = na
+var line wickBottom4 = na
+
+var box candleBody5 = na
+var line wickFull5 = na
+var line wickTop5 = na
+var line wickBottom5 = na
+
+var box candleBody6 = na
+var line wickFull6 = na
+var line wickTop6 = na
+var line wickBottom6 = na
+
+var box candleBody7 = na
+var line wickFull7 = na
+var line wickTop7 = na
+var line wickBottom7 = na
+
+var box candleBody8 = na
+var line wickFull8 = na
+var line wickTop8 = na
+var line wickBottom8 = na
+
+var box candleBody9 = na
+var line wickFull9 = na
+var line wickTop9 = na
+var line wickBottom9 = na
+
+var box candleBody10 = na
+var line wickFull10 = na
+var line wickTop10 = na
+var line wickBottom10 = na
+
+if not na(candleBody)
+    box.delete(candleBody)
+if not na(wickFull)
+    line.delete(wickFull)
+if not na(wickTop)
+    line.delete(wickTop)
+if not na(wickBottom)
+    line.delete(wickBottom)
+
+if not na(candleBody2)
+    box.delete(candleBody2)
+if not na(wickFull2)
+    line.delete(wickFull2)
+if not na(wickTop2)
+    line.delete(wickTop2)
+if not na(wickBottom2)
+    line.delete(wickBottom2)
+
+if not na(candleBody3)
+    box.delete(candleBody3)
+if not na(wickFull3)
+    line.delete(wickFull3)
+if not na(wickTop3)
+    line.delete(wickTop3)
+if not na(wickBottom3)
+    line.delete(wickBottom3)
+
+if not na(candleBody4)
+    box.delete(candleBody4)
+if not na(wickFull4)
+    line.delete(wickFull4)
+if not na(wickTop4)
+    line.delete(wickTop4)
+if not na(wickBottom4)
+    line.delete(wickBottom4)
+
+if not na(candleBody5)
+    box.delete(candleBody5)
+if not na(wickFull5)
+    line.delete(wickFull5)
+if not na(wickTop5)
+    line.delete(wickTop5)
+if not na(wickBottom5)
+    line.delete(wickBottom5)
+
+if not na(candleBody6)
+    box.delete(candleBody6)
+if not na(wickFull6)
+    line.delete(wickFull6)
+if not na(wickTop6)
+    line.delete(wickTop6)
+if not na(wickBottom6)
+    line.delete(wickBottom6)
+
+if not na(candleBody7)
+    box.delete(candleBody7)
+if not na(wickFull7)
+    line.delete(wickFull7)
+if not na(wickTop7)
+    line.delete(wickTop7)
+if not na(wickBottom7)
+    line.delete(wickBottom7)
+
+if not na(candleBody8)
+    box.delete(candleBody8)
+if not na(wickFull8)
+    line.delete(wickFull8)
+if not na(wickTop8)
+    line.delete(wickTop8)
+if not na(wickBottom8)
+    line.delete(wickBottom8)
+
+if not na(candleBody9)
+    box.delete(candleBody9)
+if not na(wickFull9)
+    line.delete(wickFull9)
+if not na(wickTop9)
+    line.delete(wickTop9)
+if not na(wickBottom9)
+    line.delete(wickBottom9)
+
+if not na(candleBody10)
+    box.delete(candleBody10)
+if not na(wickFull10)
+    line.delete(wickFull10)
+if not na(wickTop10)
+    line.delete(wickTop10)
+if not na(wickBottom10)
+    line.delete(wickBottom10)
+
+// Draw Candles based on the number selected by numCandles
+if numCandles == 1
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+
+if numCandles == 2
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+
+if numCandles == 3
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)
+
+if numCandles == 4
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)
+
+if numCandles == 5
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)
+
+if numCandles == 6
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)                        
+
+    // Draw Sixth Candle
+    wickFull6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    wickTop6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledTop6, color=wickColor6, width=1)
+    wickBottom6 := line.new(x1=offset - spacing * 5, y1=scaledBottom6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    candleBody6 := box.new(left=int(offset - scaledWidth / 2 - spacing * 5), top=scaledTop6, right=int(offset + scaledWidth / 2 - spacing * 5), bottom=scaledBottom6, 
+                           bgcolor=candleColor6, border_color=border_col, border_width=1)
+
+if numCandles == 7
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)                        
+
+    // Draw Sixth Candle
+    wickFull6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    wickTop6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledTop6, color=wickColor6, width=1)
+    wickBottom6 := line.new(x1=offset - spacing * 5, y1=scaledBottom6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    candleBody6 := box.new(left=int(offset - scaledWidth / 2 - spacing * 5), top=scaledTop6, right=int(offset + scaledWidth / 2 - spacing * 5), bottom=scaledBottom6, 
+                           bgcolor=candleColor6, border_color=border_col, border_width=1)
+
+    // Draw Seventh Candle
+    wickFull7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    wickTop7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledTop7, color=wickColor7, width=1)
+    wickBottom7 := line.new(x1=offset - spacing * 6, y1=scaledBottom7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    candleBody7 := box.new(left=int(offset - scaledWidth / 2 - spacing * 6), top=scaledTop7, right=int(offset + scaledWidth / 2 - spacing * 6), bottom=scaledBottom7, 
+                           bgcolor=candleColor7, border_color=border_col, border_width=1) 
+
+if numCandles == 8
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)                        
+
+    // Draw Sixth Candle
+    wickFull6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    wickTop6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledTop6, color=wickColor6, width=1)
+    wickBottom6 := line.new(x1=offset - spacing * 5, y1=scaledBottom6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    candleBody6 := box.new(left=int(offset - scaledWidth / 2 - spacing * 5), top=scaledTop6, right=int(offset + scaledWidth / 2 - spacing * 5), bottom=scaledBottom6, 
+                           bgcolor=candleColor6, border_color=border_col, border_width=1)
+
+    // Draw Seventh Candle
+    wickFull7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    wickTop7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledTop7, color=wickColor7, width=1)
+    wickBottom7 := line.new(x1=offset - spacing * 6, y1=scaledBottom7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    candleBody7 := box.new(left=int(offset - scaledWidth / 2 - spacing * 6), top=scaledTop7, right=int(offset + scaledWidth / 2 - spacing * 6), bottom=scaledBottom7, 
+                           bgcolor=candleColor7, border_color=border_col, border_width=1)   
+
+    // Draw Eighth Candle
+    wickFull8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    wickTop8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledTop8, color=wickColor8, width=1)
+    wickBottom8 := line.new(x1=offset - spacing * 7, y1=scaledBottom8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    candleBody8 := box.new(left=int(offset - scaledWidth / 2 - spacing * 7), top=scaledTop8, right=int(offset + scaledWidth / 2 - spacing * 7), bottom=scaledBottom8, 
+                           bgcolor=candleColor8, border_color=border_col, border_width=1)
+
+if numCandles == 9
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)                        
+
+    // Draw Sixth Candle
+    wickFull6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    wickTop6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledTop6, color=wickColor6, width=1)
+    wickBottom6 := line.new(x1=offset - spacing * 5, y1=scaledBottom6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    candleBody6 := box.new(left=int(offset - scaledWidth / 2 - spacing * 5), top=scaledTop6, right=int(offset + scaledWidth / 2 - spacing * 5), bottom=scaledBottom6, 
+                           bgcolor=candleColor6, border_color=border_col, border_width=1)
+
+    // Draw Seventh Candle
+    wickFull7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    wickTop7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledTop7, color=wickColor7, width=1)
+    wickBottom7 := line.new(x1=offset - spacing * 6, y1=scaledBottom7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    candleBody7 := box.new(left=int(offset - scaledWidth / 2 - spacing * 6), top=scaledTop7, right=int(offset + scaledWidth / 2 - spacing * 6), bottom=scaledBottom7, 
+                           bgcolor=candleColor7, border_color=border_col, border_width=1)   
+
+    // Draw Eighth Candle
+    wickFull8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    wickTop8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledTop8, color=wickColor8, width=1)
+    wickBottom8 := line.new(x1=offset - spacing * 7, y1=scaledBottom8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    candleBody8 := box.new(left=int(offset - scaledWidth / 2 - spacing * 7), top=scaledTop8, right=int(offset + scaledWidth / 2 - spacing * 7), bottom=scaledBottom8, 
+                           bgcolor=candleColor8, border_color=border_col, border_width=1)   
+
+    // Draw Ninth Candle
+    wickFull9 := line.new(x1=offset - spacing * 8, y1=scaledHigh9, x2=offset - spacing * 8, y2=scaledLow9, color=wickColor9, width=1)
+    wickTop9 := line.new(x1=offset - spacing * 8, y1=scaledHigh9, x2=offset - spacing * 8, y2=scaledTop9, color=wickColor9, width=1)
+    wickBottom9 := line.new(x1=offset - spacing * 8, y1=scaledBottom9, x2=offset - spacing * 8, y2=scaledLow9, color=wickColor9, width=1)
+    candleBody9 := box.new(left=int(offset - scaledWidth / 2 - spacing * 8), top=scaledTop9, right=int(offset + scaledWidth / 2 - spacing * 8), bottom=scaledBottom9, 
+                           bgcolor=candleColor9, border_color=border_col, border_width=1) 
+
+if numCandles == 10
+    // Draw First Candle
+    wickFull := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    wickTop := line.new(x1=offset, y1=scaledHigh, x2=offset, y2=scaledTop, color=wickColor, width=1)
+    wickBottom := line.new(x1=offset, y1=scaledBottom, x2=offset, y2=scaledLow, color=wickColor, width=1)
+    candleBody := box.new(left=int(offset - scaledWidth / 2), top=scaledTop, right=int(offset + scaledWidth / 2), bottom=scaledBottom, 
+                          bgcolor=candleColor, border_color=border_col, border_width=1)
+    
+    // Draw Second Candle
+    wickFull2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    wickTop2 := line.new(x1=offset - spacing, y1=scaledHigh2, x2=offset - spacing, y2=scaledTop2, color=wickColor2, width=1)
+    wickBottom2 := line.new(x1=offset - spacing, y1=scaledBottom2, x2=offset - spacing, y2=scaledLow2, color=wickColor2, width=1)
+    candleBody2 := box.new(left=int(offset - scaledWidth / 2 - spacing), top=scaledTop2, right=int(offset + scaledWidth / 2 - spacing), bottom=scaledBottom2, 
+                           bgcolor=candleColor2, border_color=border_col, border_width=1)
+    
+    // Draw Third Candle
+    wickFull3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    wickTop3 := line.new(x1=offset - spacing * 2, y1=scaledHigh3, x2=offset - spacing * 2, y2=scaledTop3, color=wickColor3, width=1)
+    wickBottom3 := line.new(x1=offset - spacing * 2, y1=scaledBottom3, x2=offset - spacing * 2, y2=scaledLow3, color=wickColor3, width=1)
+    candleBody3 := box.new(left=int(offset - scaledWidth / 2 - spacing * 2), top=scaledTop3, right=int(offset + scaledWidth / 2 - spacing * 2), bottom=scaledBottom3, 
+                           bgcolor=candleColor3, border_color=border_col, border_width=1)    
+
+    // Draw Fourth Candle
+    wickFull4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    wickTop4 := line.new(x1=offset - spacing * 3, y1=scaledHigh4, x2=offset - spacing * 3, y2=scaledTop4, color=wickColor4, width=1)
+    wickBottom4 := line.new(x1=offset - spacing * 3, y1=scaledBottom4, x2=offset - spacing * 3, y2=scaledLow4, color=wickColor4, width=1)
+    candleBody4 := box.new(left=int(offset - scaledWidth / 2 - spacing * 3), top=scaledTop4, right=int(offset + scaledWidth / 2 - spacing * 3), bottom=scaledBottom4, 
+                           bgcolor=candleColor4, border_color=border_col, border_width=1)                        
+
+    // Draw Fifth Candle
+    wickFull5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    wickTop5 := line.new(x1=offset - spacing * 4, y1=scaledHigh5, x2=offset - spacing * 4, y2=scaledTop5, color=wickColor5, width=1)
+    wickBottom5 := line.new(x1=offset - spacing * 4, y1=scaledBottom5, x2=offset - spacing * 4, y2=scaledLow5, color=wickColor5, width=1)
+    candleBody5 := box.new(left=int(offset - scaledWidth / 2 - spacing * 4), top=scaledTop5, right=int(offset + scaledWidth / 2 - spacing * 4), bottom=scaledBottom5, 
+                           bgcolor=candleColor5, border_color=border_col, border_width=1)                        
+
+    // Draw Sixth Candle
+    wickFull6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    wickTop6 := line.new(x1=offset - spacing * 5, y1=scaledHigh6, x2=offset - spacing * 5, y2=scaledTop6, color=wickColor6, width=1)
+    wickBottom6 := line.new(x1=offset - spacing * 5, y1=scaledBottom6, x2=offset - spacing * 5, y2=scaledLow6, color=wickColor6, width=1)
+    candleBody6 := box.new(left=int(offset - scaledWidth / 2 - spacing * 5), top=scaledTop6, right=int(offset + scaledWidth / 2 - spacing * 5), bottom=scaledBottom6, 
+                           bgcolor=candleColor6, border_color=border_col, border_width=1)
+
+    // Draw Seventh Candle
+    wickFull7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    wickTop7 := line.new(x1=offset - spacing * 6, y1=scaledHigh7, x2=offset - spacing * 6, y2=scaledTop7, color=wickColor7, width=1)
+    wickBottom7 := line.new(x1=offset - spacing * 6, y1=scaledBottom7, x2=offset - spacing * 6, y2=scaledLow7, color=wickColor7, width=1)
+    candleBody7 := box.new(left=int(offset - scaledWidth / 2 - spacing * 6), top=scaledTop7, right=int(offset + scaledWidth / 2 - spacing * 6), bottom=scaledBottom7, 
+                           bgcolor=candleColor7, border_color=border_col, border_width=1)   
+
+    // Draw Eighth Candle
+    wickFull8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    wickTop8 := line.new(x1=offset - spacing * 7, y1=scaledHigh8, x2=offset - spacing * 7, y2=scaledTop8, color=wickColor8, width=1)
+    wickBottom8 := line.new(x1=offset - spacing * 7, y1=scaledBottom8, x2=offset - spacing * 7, y2=scaledLow8, color=wickColor8, width=1)
+    candleBody8 := box.new(left=int(offset - scaledWidth / 2 - spacing * 7), top=scaledTop8, right=int(offset + scaledWidth / 2 - spacing * 7), bottom=scaledBottom8, 
+                           bgcolor=candleColor8, border_color=border_col, border_width=1)   
+
+    // Draw Ninth Candle
+    wickFull9 := line.new(x1=offset - spacing * 8, y1=scaledHigh9, x2=offset - spacing * 8, y2=scaledLow9, color=wickColor9, width=1)
+    wickTop9 := line.new(x1=offset - spacing * 8, y1=scaledHigh9, x2=offset - spacing * 8, y2=scaledTop9, color=wickColor9, width=1)
+    wickBottom9 := line.new(x1=offset - spacing * 8, y1=scaledBottom9, x2=offset - spacing * 8, y2=scaledLow9, color=wickColor9, width=1)
+    candleBody9 := box.new(left=int(offset - scaledWidth / 2 - spacing * 8), top=scaledTop9, right=int(offset + scaledWidth / 2 - spacing * 8), bottom=scaledBottom9, 
+                           bgcolor=candleColor9, border_color=border_col, border_width=1)    
+
+    // Draw Tenth Candle
+    wickFull10 := line.new(x1=offset - spacing * 9, y1=scaledHigh10, x2=offset - spacing * 9, y2=scaledLow10, color=wickColor10, width=1)
+    wickTop10 := line.new(x1=offset - spacing * 9, y1=scaledHigh10, x2=offset - spacing * 9, y2=scaledTop10, color=wickColor10, width=1)
+    wickBottom10 := line.new(x1=offset - spacing * 9, y1=scaledBottom10, x2=offset - spacing * 9, y2=scaledLow10, color=wickColor10, width=1)
+    candleBody10 := box.new(left=int(offset - scaledWidth / 2 - spacing * 9), top=scaledTop10, right=int(offset + scaledWidth / 2 - spacing * 9), bottom=scaledBottom10, bgcolor=candleColor10, border_color=border_col, border_width=1)
+
+
+
+
+                                                                           
